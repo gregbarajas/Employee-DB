@@ -52,7 +52,6 @@ def edit_employee():
     search[8] = start_date
     search[9] = end_date
     search[10] = employee_id
-    # data goes nowhere
 
 
 def add_employee():
