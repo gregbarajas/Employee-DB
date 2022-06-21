@@ -1,4 +1,4 @@
-employees = []  # note naming style
+employees = []
 names = []
 # counter = 0
 # DIR = r"C:\Users\ebara\Downloads\"
@@ -113,7 +113,7 @@ def main():
             print('\n' * 3)
             print_employee()
             print('\n' * 3)
-        elif user_option in "34":
+        elif user_option in "3":
             found = search_id()
             if found == -1:
                 print("Employee not found...")
