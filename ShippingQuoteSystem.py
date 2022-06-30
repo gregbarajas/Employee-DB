@@ -58,9 +58,10 @@ This will make it easier to implement a new web-based interface later on without
 #Assignment shipping calculator
 #Author: Name
 
+
 from datetime import datetime
 from datetime import date
-
+from csv import csv
 
 class Package:
 
@@ -77,14 +78,11 @@ class Package:
         self.shipment_type()
         self.calculate()
 
-    def package_weight(self):
-        while True:
-            if self.booking["weight"] <= 10:
-                print("This package is an appropriate weight  to ship.")
-                break
-            else:
-                print("You're package is too heavy")
-                self.booking["weight"] = int(input("Write a package weight (in kgs): "))
+    def add_to_csv(self):
+        with open(DIR + "database.csv", "w") as f:
+            for key in self.booking.keys():
+                f.write(self, )
+
 
     def package_volume(self):
         while True:
@@ -95,15 +93,26 @@ class Package:
                 print("You're package is too large")
                 self.booking["volume"] = int(input("Write a package weight (in cubic meters): "))
 
+    def package_weight(self):
+        while True:
+            if self.booking["weight"] <= 10:
+                print("This package is an appropriate weight  to ship.")
+                break
+            else:
+                print("You're package is too heavy")
+                self.booking["weight"] = int(input("Write a package weight (in kgs): "))
+
     def contents_dangerous(self):
         while True:
-            if self.booking["contents"] in ("yn"):
+            if self.booking["contents"] not in ("yn"):
+               self.booking["contents"] = input("Are the contents dangerous? (Y/N)").lower()
+            else:
                if self.booking["contents"] == "y":
                    print("Your contents cannot ship via air.")
-               else:
                    break
-            else:
-               self.booking["contents"] = input("Are the contents dangerous? (Y/N)").lower()
+               else:
+                  print("You're content's aren't dangerous and are eligible to ship.")
+                  break
 
     def international(self):
         while True:
@@ -128,13 +137,13 @@ class Package:
         print(f"You want your product to ship in", self.booking["delivery_date"], "days")
 
     def shipment_type(self):
-        if self.booking["delivery_date"] <= 3 and self.booking["weight"] <= 10 and self.booking["volume"] <= 125:
+        if self.booking["delivery_date"] <= 3 and self.booking["weight"] <= 10 and self.booking["volume"] <= 125 and self.booking["contents"] == "n":
             self.booking["shipment_type"] = "air"
             print("Your product can ship through air")
         elif self.booking["contents"] == "y".lower():
             self.booking["shipment_type"] != "air"
-        elif self.booking["weight"] <= 9 and self.booking["volume"] <= 124 and self.booking["delivery_date"] >= 3:
-            self.booking["shipment_type"] == "truck"
+        elif self.booking["weight"] <= 9 and self.booking["volume"] <= 124 and self.booking["delivery_date"] >= 3 and self.booking["international"] == "n".lower():
+            self.booking["shipment_type"] = "truck"
             print(self.booking["shipment_type"])
         elif self.booking["weight"] <= 9 and self.booking["volume"] <= 124 and self.booking["international"] == "y".lower():
             self.booking["shipment_type"] = "ocean"
@@ -157,14 +166,17 @@ class Package:
             if self.booking["delivery_date"] <= 3:
               cost_per_shipment = 45
               print(f"Your shipment will cost {cost_per_shipment}")
+              self.booking["shipping_cost"] = cost_per_shipment
               break
             else:
               cost_per_shipment = 25
               print(f"Your shipment will cost {cost_per_shipment}")
+              self.booking["shipping_cost"] = cost_per_shipment
               break
           else:
             cost_per_shipment = 30
             print(f"Your shipment will cost {cost_per_shipment}")
+            self.booking["shipping_cost"] = cost_per_shipment
             break
 
 
@@ -174,18 +186,49 @@ def user_input():
     booking["volume"] = int(input("Write a package volume (in cubic meters): "))
     booking["weight"] = int(input("Write a package weight (in kgs): "))
     booking["description"] = input("Write a package description: ")
-    booking["delivery_date"] = input("Write a package description (DD/MM/YYYY): ")
+    booking["delivery_date"] = input("Write a desired delivery date (DD/MM/YYYY): ")
     booking["international"] = input("Is this shipping internationally? (Y/N): ").lower()
     booking["contents"] = input("Are the contents dangerous? (Y/N): ").lower()
     booking["shipment_type"] = "truck"
+    booking["shipping_cost"] = 0
     return booking
 
-
 def main():
-    booking = user_input()
-    print(booking)
-    packaging = Package(booking)
-    packaging.shipping_info()
-
+    while True:
+        print('----------------------------------------------\n')
+        print('      Welcome to the Shipping estimator     \n')
+        print('----------------------------------------------\n')
+        print('[1] Add a package: \n')
+        print('[2] List packages: \n')
+        print('[3] Remove package: \n')
+        print('[4] Search packages by type: \n')
+        print('[5] Leave: \n')
+        user_option = input("Please select an option: ")
+        if user_option == "1":
+            booking = user_input()
+            print(booking)
+            packaging = Package(booking)
+            packaging.shipping_info()
+        elif user_option == "2":
+            print('\n' * 3)
+            packaging.shipping_info()
+            print('\n' * 3)
+        elif user_option == "3":
+            found = search_id()
+            if found == -1:
+                print("Employee not found...")
+            elif user_option == "4":
+                search_package()
+            elif user_option == "5":
+                print("Goodbye . . .")
+                break
+            else:
+                print("Please select a valid option...")
 
 main()
+
+""" booking = user_input()
+    print(booking)
+    packaging = Package(booking)
+    packaging.shipping_info()"""
+
