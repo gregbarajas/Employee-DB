@@ -55,13 +55,12 @@ Be creative! Use this as an opportunity to reflect on everything you have learne
 Consider making your user interface fully separated from the rest of the project.
 This will make it easier to implement a new web-based interface later on without having to modify the underlying implementation."""
 
-#Assignment shipping calculator
-#Author: Name
-
-
-from datetime import datetime
 from datetime import date
 from csv import csv
+# Assignment shipping calculator
+# Author: Name
+from datetime import datetime
+
 
 class Package:
 
@@ -77,11 +76,24 @@ class Package:
         self.contents_dangerous()
         self.shipment_type()
         self.calculate()
+        self.add_to_csv()
 
     def add_to_csv(self):
-        with open(DIR + "database.csv", "w") as f:
-            for key in self.booking.keys():
+        csv_field_columns = ["name_of_customer", "volume", "weight", "description", "delivery_date", "international",
+                             "contents", "shipment_type", "shipping_cost"]
+        with open("database.csv", "w", newline="") as f:
+            writer = f.DictWriter(f, fieldnames=csv_field_columns)
+            writer.writeheader()
+            writer.writerows(self.booking)
+            print(f"Added {self.booking} to your csv file.")
+            f.close(self)
+            """for key in self.booking:
+                f.writerow(key)
                 f.write(self, )
+        f.close(self)"""
+
+
+
 
 
     def package_volume(self):
@@ -160,7 +172,7 @@ class Package:
                 print(f"Your", self.booking["shipment_type"], "will cost you",{cost_per_kg})
                 break
               else:
-                print(f"Your", self.booking["shipment_type"], "will cost you",{cost_per_volume})
+                print(f"Your", self.booking["shipment_type"], "shipment will cost you", "$", cost_per_volume)
                 break
           elif self.booking["shipment_type"] == "truck":
             if self.booking["delivery_date"] <= 3:
@@ -216,7 +228,7 @@ def main():
         elif user_option == "3":
             found = search_id()
             if found == -1:
-                print("Employee not found...")
+                print("Package not found...")
             elif user_option == "4":
                 search_package()
             elif user_option == "5":
